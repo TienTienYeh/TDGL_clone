@@ -505,7 +505,7 @@ class TDGLSolver:
         operators = self.operators
         # Compute the supercurrent, scalar potential, and normal current
         supercurrent = operators.get_supercurrent(psi)
-        rhs = (operators.divergence @ (supercurrent - dA_dt)) - (
+        rhs = (operators.divergence @ (supercurrent - dA_dt/4)) - (
             operators.mu_boundary_laplacian @ self.mu_boundary
         )
         if use_cupy and not use_cupy_solver:
@@ -516,7 +516,7 @@ class TDGLSolver:
             mu = operators.mu_laplacian_lu(rhs)
         if use_cupy and not use_cupy_solver:
             mu = cupy.asarray(mu)
-        normal_current = -(operators.mu_gradient @ mu) - dA_dt
+        normal_current = -(operators.mu_gradient @ mu) - dA_dt/4
         return mu, supercurrent, normal_current
 
     def get_induced_vector_potential(
